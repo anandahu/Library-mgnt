@@ -35,8 +35,11 @@ exports.createAssignment = async (req, res) => {
 
 exports.getAllAssignments = async (req, res) => {
   try {
-    // Sort by most recently taken
-    const assignments = await Assignment.find().sort({ dateTaken: -1 });
+    // Sort by most recently issued (dateOfIssue)
+    const assignments = await Assignment.find()
+      .populate("bookId")
+      .populate("studentId")
+      .sort({ dateOfIssue: -1 });
     res.status(200).json({
       status: "success",
       results: assignments.length,
@@ -56,7 +59,10 @@ exports.returnBook = async (req, res) => {
   try {
     const assignment = await Assignment.findByIdAndUpdate(
       req.params.id,
-      { dateReceivedBack: Date.now() },
+      {
+        returnDate: Date.now(),
+        status: "Returned"
+      },
       {
         new: true,
         runValidators: true,

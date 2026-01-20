@@ -259,11 +259,10 @@ function App() {
           <div className="flex gap-0 border-t border-gray-200">
             <button
               onClick={() => setActiveTab("assignments")}
-              className={`px-6 py-3 font-medium text-sm transition-colors border-b-2 ${
-                activeTab === "assignments"
-                  ? "border-emerald-500 text-emerald-600"
-                  : "border-transparent text-gray-600 hover:text-gray-900"
-              }`}
+              className={`px-6 py-3 font-medium text-sm transition-colors border-b-2 ${activeTab === "assignments"
+                ? "border-emerald-500 text-emerald-600"
+                : "border-transparent text-gray-600 hover:text-gray-900"
+                }`}
             >
               <div className="flex items-center gap-2">
                 <BookOpen size={18} />
@@ -272,11 +271,10 @@ function App() {
             </button>
             <button
               onClick={() => setActiveTab("students")}
-              className={`px-6 py-3 font-medium text-sm transition-colors border-b-2 ${
-                activeTab === "students"
-                  ? "border-blue-500 text-blue-600"
-                  : "border-transparent text-gray-600 hover:text-gray-900"
-              }`}
+              className={`px-6 py-3 font-medium text-sm transition-colors border-b-2 ${activeTab === "students"
+                ? "border-blue-500 text-blue-600"
+                : "border-transparent text-gray-600 hover:text-gray-900"
+                }`}
             >
               <div className="flex items-center gap-2">
                 <Users size={18} />
@@ -285,11 +283,10 @@ function App() {
             </button>
             <button
               onClick={() => setActiveTab("books")}
-              className={`px-6 py-3 font-medium text-sm transition-colors border-b-2 ${
-                activeTab === "books"
-                  ? "border-purple-500 text-purple-600"
-                  : "border-transparent text-gray-600 hover:text-gray-900"
-              }`}
+              className={`px-6 py-3 font-medium text-sm transition-colors border-b-2 ${activeTab === "books"
+                ? "border-purple-500 text-purple-600"
+                : "border-transparent text-gray-600 hover:text-gray-900"
+                }`}
             >
               <div className="flex items-center gap-2">
                 <Book size={18} />
@@ -361,6 +358,7 @@ function App() {
                   onEdit={openEditBookForm}
                   onDelete={handleDeleteBook}
                   onViewDetails={setViewingBook}
+                  refreshBooks={loadAllData}
                 />
               </div>
             )}
@@ -372,10 +370,11 @@ function App() {
       {showAssignmentForm && (
         <AssignmentForm
           onClose={closeAssignmentForm}
-          onSave={handleCreateOrUpdateAssignment}
+          onSubmit={handleCreateOrUpdateAssignment}
           initialData={editingAssignment}
           students={students}
           books={books}
+          assignments={assignments}
         />
       )}
 

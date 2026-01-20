@@ -21,11 +21,28 @@ exports.createBook = async (req, res) => {
   }
 };
 
+// Update a book
+exports.updateBook = async (req, res) => {
+  try {
+    const updatedBook = await Book.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true, runValidators: true }
+    );
+    if (!updatedBook) {
+      return res.status(404).json({ message: "Book not found" });
+    }
+    res.status(200).json(updatedBook);
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
 // Delete a specific Sub-ID (Damaged Book Copy)
 exports.deleteSubId = async (req, res) => {
   try {
     const { id, subId } = req.params; // id is Book _id, subId is the specific copy ID
-    
+
     const updatedBook = await Book.findByIdAndUpdate(
       id,
       { $pull: { subIds: subId } }, // Removes the specific subId from the array

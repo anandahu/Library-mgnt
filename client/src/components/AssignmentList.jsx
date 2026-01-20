@@ -30,15 +30,15 @@ const AssignmentList = ({ assignments, onReturn, onEdit, onDelete }) => {
 
   // Calculate total fine for all overdue books
   const totalFine = assignments.reduce((sum, assignment) => {
-    if (!assignment.dateReceivedBack) {
-      return sum + calculateFine(assignment.dateTaken);
+    if (!assignment.returnDate) {
+      return sum + calculateFine(assignment.dateOfIssue);
     }
     return sum;
   }, 0);
 
   const hasOverdueBooks = assignments.some(
     (assignment) =>
-      !assignment.dateReceivedBack && getDaysOverdue(assignment.dateTaken) > 0,
+      !assignment.returnDate && getDaysOverdue(assignment.dateOfIssue) > 0,
   );
 
   return (
@@ -65,26 +65,24 @@ const AssignmentList = ({ assignments, onReturn, onEdit, onDelete }) => {
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
         {assignments.map((assignment) => {
-          const isReturned = !!assignment.dateReceivedBack;
+          const isReturned = !!assignment.returnDate;
           const fine = calculateFine(
-            assignment.dateTaken,
-            assignment.dateReceivedBack,
+            assignment.dateOfIssue,
+            assignment.returnDate,
           );
-          
+
           const daysDiff = Math.floor(
-            (new Date(assignment.dateReceivedBack || new Date()) -
-              new Date(assignment.dateTaken)) /
-              (1000 * 60 * 60 * 24),
+            (new Date(assignment.returnDate || new Date()) -
+              new Date(assignment.dateOfIssue)) /
+            (1000 * 60 * 60 * 24),
           );
 
           return (
             <div
               key={assignment._id}
-              className={`group relative bg-white rounded-xl p-6 border ${
-                fine > 0 ? "border-red-200 bg-red-50" : "border-gray-200"
-              } transition-all duration-300 hover:-translate-y-1 hover:shadow-md ${
-                isReturned ? "opacity-80" : ""
-              }`}
+              className={`group relative bg-white rounded-xl p-6 border ${fine > 0 ? "border-red-200 bg-red-50" : "border-gray-200"
+                } transition-all duration-300 hover:-translate-y-1 hover:shadow-md ${isReturned ? "opacity-80" : ""
+                }`}
             >
               <div className="flex justify-between items-start mb-4">
                 <div
@@ -117,11 +115,10 @@ const AssignmentList = ({ assignments, onReturn, onEdit, onDelete }) => {
                     <Trash2 size={16} />
                   </button>
                   <span
-                    className={`px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1.5 ${
-                      isReturned
+                    className={`px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1.5 ${isReturned
                         ? "bg-gray-100 text-gray-600"
                         : "bg-emerald-50 text-emerald-600 border border-emerald-100"
-                    }`}
+                      }`}
                   >
                     {isReturned ? (
                       <>
@@ -147,29 +144,29 @@ const AssignmentList = ({ assignments, onReturn, onEdit, onDelete }) => {
               )}
 
               <h3 className="text-lg font-bold text-gray-900 mb-1 line-clamp-1">
-                {assignment.bookName}
+                {assignment.bookId?.bookName}
               </h3>
               <p className="text-sm text-gray-500 mb-4">
-                ID: {assignment.bookId}
+                ID: {assignment.subId}
               </p>
 
               <div className="space-y-2 border-t border-gray-100 pt-4 mb-4">
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-500">Student</span>
                   <span className="text-gray-900 font-medium text-right line-clamp-1">
-                    {assignment.studentName}
+                    {assignment.studentId?.name}
                   </span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-500">Dept/Roll</span>
                   <span className="text-gray-900 text-right">
-                    {assignment.department} • {assignment.rollNo}
+                    {assignment.studentId?.department} • {assignment.studentId?.rollNo}
                   </span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-500">Issued On</span>
                   <span className="text-gray-900 text-right">
-                    {new Date(assignment.dateTaken).toLocaleDateString()}
+                    {new Date(assignment.dateOfIssue).toLocaleDateString()}
                   </span>
                 </div>
                 <div className="flex justify-between text-sm">
@@ -185,7 +182,7 @@ const AssignmentList = ({ assignments, onReturn, onEdit, onDelete }) => {
                     <span className="text-gray-500">Returned On</span>
                     <span className="text-emerald-600 text-right">
                       {new Date(
-                        assignment.dateReceivedBack,
+                        assignment.returnDate,
                       ).toLocaleDateString()}
                     </span>
                   </div>
@@ -195,11 +192,10 @@ const AssignmentList = ({ assignments, onReturn, onEdit, onDelete }) => {
               {!isReturned && (
                 <button
                   onClick={() => onReturn(assignment._id)}
-                  className={`w-full mt-2 py-2.5 rounded-lg transition-colors text-sm font-medium flex items-center justify-center gap-2 ${
-                    fine > 0
+                  className={`w-full mt-2 py-2.5 rounded-lg transition-colors text-sm font-medium flex items-center justify-center gap-2 ${fine > 0
                       ? "bg-red-600 hover:bg-red-700 text-white"
                       : "bg-emerald-500 hover:bg-emerald-600 text-white"
-                  }`}
+                    }`}
                 >
                   Mark as Returned
                 </button>

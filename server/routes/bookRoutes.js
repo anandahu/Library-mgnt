@@ -6,6 +6,7 @@ const router = express.Router();
 router.get("/", bookController.getAllBooks);
 router.post("/", bookController.createBook);
 router.delete("/:id", bookController.deleteBook);
+router.patch("/:id", bookController.updateBook);
 
 // Routes for Sub-IDs
 router.put("/:id/subId", bookController.addSubId); // Add a copy

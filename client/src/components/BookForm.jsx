@@ -34,7 +34,7 @@ export default function BookForm({ initialData = null, onSubmit, onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 bg-black bg-opacity-50 flex items-center justify-center p-4">
       <div className="bg-white rounded-lg p-6 w-full max-w-md relative">
         <button onClick={onClose} className="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
           <X size={24} />
@@ -85,7 +85,7 @@ export default function BookForm({ initialData = null, onSubmit, onClose }) {
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border p-2"
             />
           </div>
-          
+
           {/* New Input for Sub IDs */}
           <div>
             <label className="block text-sm font-medium text-gray-700">

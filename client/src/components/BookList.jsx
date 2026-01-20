@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Trash2, Edit2, ChevronDown, ChevronUp, XCircle } from "lucide-react";
+import { deleteSubId } from "../api/userApi";
 
 export default function BookList({ books, onEdit, onDelete, refreshBooks }) {
   // State to toggle visibility of sub-ids for each book
@@ -15,20 +16,13 @@ export default function BookList({ books, onEdit, onDelete, refreshBooks }) {
       return;
 
     try {
-      // Assuming API URL is stored in env or relative
-      const response = await fetch(
-        `http://localhost:5000/api/books/${bookId}/subId/${subId}`,
-        {
-          method: "DELETE",
-        },
-      );
-      if (response.ok) {
+      await deleteSubId(bookId, subId);
+      if (refreshBooks) {
         refreshBooks(); // Reload the list to show updated copies
-      } else {
-        alert("Failed to delete copy");
       }
     } catch (error) {
       console.error("Error deleting copy:", error);
+      alert(error.message || "Failed to delete copy");
     }
   };
 

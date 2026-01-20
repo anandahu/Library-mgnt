@@ -118,6 +118,10 @@ export async function getBook(id) {
   return safe(`${BOOKS_BASE}/${id}`);
 }
 
+export async function deleteSubId(id, subId) {
+  return safe(`${BOOKS_BASE}/${id}/subId/${subId}`, { method: "DELETE" });
+}
+
 export default {
   // Assignments
   read,
@@ -137,5 +141,6 @@ export default {
   updateBook,
   removeBook,
   getBook,
+  deleteSubId,
   safe,
 };
