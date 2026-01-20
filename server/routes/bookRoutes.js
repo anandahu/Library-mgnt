@@ -3,10 +3,12 @@ const bookController = require("../controllers/bookController");
 
 const router = express.Router();
 
-router.post("/", bookController.createBook);
 router.get("/", bookController.getAllBooks);
-router.get("/:id", bookController.getBook);
-router.patch("/:id", bookController.updateBook);
+router.post("/", bookController.createBook);
 router.delete("/:id", bookController.deleteBook);
+
+// Routes for Sub-IDs
+router.put("/:id/subId", bookController.addSubId); // Add a copy
+router.delete("/:id/subId/:subId", bookController.deleteSubId); // Delete a specific copy
 
 module.exports = router;

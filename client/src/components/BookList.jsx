@@ -1,90 +1,134 @@
-import React from "react";
-import { Trash2, Edit2, Eye } from "lucide-react";
+import React, { useState } from "react";
+import { Trash2, Edit2, ChevronDown, ChevronUp, XCircle } from "lucide-react";
 
-export default function BookList({
-  books,
-  onEdit,
-  onDelete,
-  onViewDetails,
-  isLoading,
-}) {
-  if (isLoading) {
-    return (
-      <div className="flex justify-center items-center h-64">
-        <div className="text-gray-500">Loading books...</div>
-      </div>
-    );
-  }
+export default function BookList({ books, onEdit, onDelete, refreshBooks }) {
+  // State to toggle visibility of sub-ids for each book
+  const [expandedBook, setExpandedBook] = useState(null);
 
-  if (!books || books.length === 0) {
-    return (
-      <div className="text-center py-8 text-gray-500">
-        No books added yet. Add a new book to get started.
-      </div>
-    );
-  }
+  const toggleExpand = (id) => {
+    if (expandedBook === id) setExpandedBook(null);
+    else setExpandedBook(id);
+  };
+
+  const handleDeleteSubId = async (bookId, subId) => {
+    if (!window.confirm(`Are you sure you want to remove copy ID: ${subId}?`))
+      return;
+
+    try {
+      // Assuming API URL is stored in env or relative
+      const response = await fetch(
+        `http://localhost:5000/api/books/${bookId}/subId/${subId}`,
+        {
+          method: "DELETE",
+        },
+      );
+      if (response.ok) {
+        refreshBooks(); // Reload the list to show updated copies
+      } else {
+        alert("Failed to delete copy");
+      }
+    } catch (error) {
+      console.error("Error deleting copy:", error);
+    }
+  };
 
   return (
-    <div className="overflow-x-auto bg-white rounded-lg shadow">
-      <table className="w-full border-collapse">
-        <thead>
-          <tr className="bg-gray-100 border-b">
-            <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">
+    <div className="bg-white shadow-md rounded-lg overflow-hidden">
+      <table className="min-w-full divide-y divide-gray-200">
+        <thead className="bg-gray-50">
+          <tr>
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Book Name
             </th>
-            <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">
-              Book ID
-            </th>
-            <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
               Author
             </th>
-            <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">
-              ISBN
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Publication
             </th>
-            <th className="px-4 py-3 text-left text-sm font-semibold text-gray-700">
-              Copies
+            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+              Total Copies
             </th>
-            <th className="px-4 py-3 text-center text-sm font-semibold text-gray-700">
+            <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
               Actions
             </th>
           </tr>
         </thead>
-        <tbody>
+        <tbody className="bg-white divide-y divide-gray-200">
           {books.map((book) => (
-            <tr key={book._id} className="border-b hover:bg-gray-50">
-              <td className="px-4 py-3 text-sm text-gray-800">
-                {book.bookName}
-              </td>
-              <td className="px-4 py-3 text-sm text-gray-600">{book.bookId}</td>
-              <td className="px-4 py-3 text-sm text-gray-600">{book.author}</td>
-              <td className="px-4 py-3 text-sm text-gray-600">{book.isbn}</td>
-              <td className="px-4 py-3 text-sm text-gray-600">{book.copies}</td>
-              <td className="px-4 py-3 text-center">
-                <div className="flex justify-center gap-2">
+            <React.Fragment key={book._id}>
+              <tr>
+                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+                  {book.bookName}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {book.author}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {book.publication}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  <span className="font-bold">
+                    {book.subIds ? book.subIds.length : 0}
+                  </span>
                   <button
-                    onClick={() => onViewDetails(book)}
-                    className="text-blue-600 hover:text-blue-800 p-1"
-                    title="View Details"
+                    onClick={() => toggleExpand(book._id)}
+                    className="ml-2 text-blue-600 hover:text-blue-900 text-xs underline"
                   >
-                    <Eye size={18} />
+                    {expandedBook === book._id ? "Hide IDs" : "Show IDs"}
                   </button>
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <button
                     onClick={() => onEdit(book)}
-                    className="text-green-600 hover:text-green-800 p-1"
-                    title="Edit"
+                    className="text-blue-600 hover:text-blue-900 mr-4"
                   >
-                    <Edit2 size={18} />
+                    <Edit2 size={20} />
                   </button>
                   <button
                     onClick={() => onDelete(book._id)}
-                    className="text-red-600 hover:text-red-800 p-1"
-                    title="Delete"
+                    className="text-red-600 hover:text-red-900"
                   >
-                    <Trash2 size={18} />
+                    <Trash2 size={20} />
                   </button>
-                </div>
-              </td>
-            </tr>
+                </td>
+              </tr>
+              {/* Expandable row for Sub IDs */}
+              {expandedBook === book._id && (
+                <tr className="bg-gray-50">
+                  <td colSpan="5" className="px-6 py-4">
+                    <div className="text-sm text-gray-700">
+                      <strong>Managed Copies (Sub-IDs):</strong>
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {book.subIds && book.subIds.length > 0 ? (
+                          book.subIds.map((subId, index) => (
+                            <span
+                              key={index}
+                              className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800"
+                            >
+                              {subId}
+                              <button
+                                onClick={() =>
+                                  handleDeleteSubId(book._id, subId)
+                                }
+                                className="ml-2 text-red-500 hover:text-red-700"
+                                title="Remove this damaged copy"
+                              >
+                                <XCircle size={14} />
+                              </button>
+                            </span>
+                          ))
+                        ) : (
+                          <span className="text-gray-500 italic">
+                            No specific copy IDs added.
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              )}
+            </React.Fragment>
           ))}
         </tbody>
       </table>

@@ -7,33 +7,25 @@ const bookSchema = new mongoose.Schema(
       required: [true, "Book name is required"],
       trim: true,
     },
-    bookId: {
-      type: String,
-      required: [true, "Book ID is required"],
-      unique: true,
-      trim: true,
-    },
     author: {
       type: String,
       required: [true, "Author name is required"],
       trim: true,
     },
-    isbn: {
+    publication: {
       type: String,
-      required: [true, "ISBN is required"],
       trim: true,
     },
-    copies: {
+    year: {
       type: Number,
-      required: [true, "Number of copies is required"],
-      min: 0,
     },
-    isAvailable: {
-      type: Boolean,
-      default: true,
-    },
+    // Array to store unique IDs for each physical copy
+    subIds: [{
+      type: String,
+      trim: true
+    }]
   },
-  { timestamps: true },
+  { timestamps: true }
 );
 
 module.exports = mongoose.model("Book", bookSchema);

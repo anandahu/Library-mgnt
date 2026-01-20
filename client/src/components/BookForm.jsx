@@ -4,188 +4,110 @@ import { X } from "lucide-react";
 export default function BookForm({ initialData = null, onSubmit, onClose }) {
   const [formData, setFormData] = useState({
     bookName: "",
-    bookId: "",
     author: "",
-    isbn: "",
-    copies: "",
+    publication: "",
+    year: "",
+    subIds: "" // Handle as string input first
   });
-
-  const [errors, setErrors] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (initialData) {
-      setFormData(initialData);
+      setFormData({
+        ...initialData,
+        subIds: initialData.subIds ? initialData.subIds.join(", ") : ""
+      });
     }
   }, [initialData]);
 
-  const validateForm = () => {
-    const newErrors = {};
-    if (!formData.bookName.trim()) newErrors.bookName = "Book name is required";
-    if (!formData.bookId.trim()) newErrors.bookId = "Book ID is required";
-    if (!formData.author.trim()) newErrors.author = "Author name is required";
-    if (!formData.isbn.trim()) newErrors.isbn = "ISBN is required";
-    if (!formData.copies || formData.copies < 1)
-      newErrors.copies = "Number of copies must be at least 1";
-    return newErrors;
-  };
-
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-    if (errors[name]) {
-      setErrors((prev) => ({ ...prev, [name]: "" }));
-    }
+    setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = (e) => {
     e.preventDefault();
-    const newErrors = validateForm();
-    if (Object.keys(newErrors).length > 0) {
-      setErrors(newErrors);
-      return;
-    }
-
-    try {
-      setIsSubmitting(true);
-      await onSubmit(formData);
-    } catch (error) {
-      console.error("Error submitting form:", error);
-      alert(error.message || "Failed to save book");
-    } finally {
-      setIsSubmitting(false);
-    }
+    // Convert comma separated string to array and trim whitespace
+    const processedData = {
+      ...formData,
+      subIds: formData.subIds.split(",").map(id => id.trim()).filter(id => id !== "")
+    };
+    onSubmit(processedData);
   };
 
   return (
-    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-lg shadow-lg max-w-md w-full p-6">
-        <div className="flex justify-between items-center mb-4">
-          <h2 className="text-xl font-bold text-gray-800">
-            {initialData ? "Edit Book" : "Add New Book"}
-          </h2>
-          <button
-            onClick={onClose}
-            className="text-gray-500 hover:text-gray-700"
-            type="button"
-          >
-            <X size={24} />
-          </button>
-        </div>
-
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4">
+      <div className="bg-white rounded-lg p-6 w-full max-w-md relative">
+        <button onClick={onClose} className="absolute top-4 right-4 text-gray-500 hover:text-gray-700">
+          <X size={24} />
+        </button>
+        <h2 className="text-2xl font-bold mb-4">
+          {initialData ? "Edit Book" : "Add New Book"}
+        </h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Book Name *
-            </label>
+            <label className="block text-sm font-medium text-gray-700">Book Name</label>
             <input
               type="text"
               name="bookName"
               value={formData.bookName}
               onChange={handleChange}
-              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.bookName ? "border-red-500" : "border-gray-300"
-              }`}
-              placeholder="Book name"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border p-2"
+              required
             />
-            {errors.bookName && (
-              <p className="text-red-500 text-sm mt-1">{errors.bookName}</p>
-            )}
           </div>
-
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Book ID *
-            </label>
-            <input
-              type="text"
-              name="bookId"
-              value={formData.bookId}
-              onChange={handleChange}
-              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.bookId ? "border-red-500" : "border-gray-300"
-              }`}
-              placeholder="Unique book ID"
-            />
-            {errors.bookId && (
-              <p className="text-red-500 text-sm mt-1">{errors.bookId}</p>
-            )}
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Author *
-            </label>
+            <label className="block text-sm font-medium text-gray-700">Author</label>
             <input
               type="text"
               name="author"
               value={formData.author}
               onChange={handleChange}
-              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.author ? "border-red-500" : "border-gray-300"
-              }`}
-              placeholder="Author name"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border p-2"
+              required
             />
-            {errors.author && (
-              <p className="text-red-500 text-sm mt-1">{errors.author}</p>
-            )}
           </div>
-
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              ISBN *
+            <label className="block text-sm font-medium text-gray-700">Publication</label>
+            <input
+              type="text"
+              name="publication"
+              value={formData.publication}
+              onChange={handleChange}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border p-2"
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">Year</label>
+            <input
+              type="number"
+              name="year"
+              value={formData.year}
+              onChange={handleChange}
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border p-2"
+            />
+          </div>
+          
+          {/* New Input for Sub IDs */}
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Copies IDs (Comma separated)
             </label>
             <input
               type="text"
-              name="isbn"
-              value={formData.isbn}
+              name="subIds"
+              value={formData.subIds}
               onChange={handleChange}
-              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.isbn ? "border-red-500" : "border-gray-300"
-              }`}
-              placeholder="ISBN"
+              placeholder="e.g., A101, A102, A103"
+              className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 border p-2"
             />
-            {errors.isbn && (
-              <p className="text-red-500 text-sm mt-1">{errors.isbn}</p>
-            )}
+            <p className="text-xs text-gray-500 mt-1">Enter unique IDs for each copy of the book.</p>
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
-              Number of Copies *
-            </label>
-            <input
-              type="number"
-              name="copies"
-              value={formData.copies}
-              onChange={handleChange}
-              className={`w-full px-3 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                errors.copies ? "border-red-500" : "border-gray-300"
-              }`}
-              placeholder="0"
-              min="1"
-            />
-            {errors.copies && (
-              <p className="text-red-500 text-sm mt-1">{errors.copies}</p>
-            )}
-          </div>
-
-          <div className="flex gap-2 pt-4">
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50"
-            >
-              {isSubmitting ? "Saving..." : "Save Book"}
-            </button>
-          </div>
+          <button
+            type="submit"
+            className="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          >
+            {initialData ? "Update Book" : "Add Book"}
+          </button>
         </form>
       </div>
     </div>

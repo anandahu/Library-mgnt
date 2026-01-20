@@ -2,59 +2,44 @@ const mongoose = require("mongoose");
 
 const assignmentSchema = new mongoose.Schema(
   {
-    studentName: {
-      type: String,
-      required: [true, "Student name is required"],
-      trim: true,
-    },
-    department: {
-      type: String,
-      required: [true, "Department is required"],
-      trim: true,
-    },
-    rollNo: {
-      type: String,
-      required: [true, "Roll number is required"],
-      trim: true,
-    },
-    phoneNumber: {
-      type: String,
-      required: [true, "Phone number is required"],
-      trim: true,
-    },
-    bookName: {
-      type: String,
-      required: [true, "Book name is required"],
-
-      trim: true,
+    studentId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Student",
+      required: [true, "Student ID is required"],
     },
     bookId: {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Book",
       required: [true, "Book ID is required"],
-      unique: true,
-      trim: true,
     },
-    dateTaken: {
-      type: Date,
-      default: Date.now,
-      required: true,
-    },
-    dateReceivedBack: {
-      type: Date,
-      default: null,
-    },
-    Fine: {
+    // Add this new field to track the specific copy
+    subId: {
       type: String,
-      required: false,
-      unique: true,
-      trim: true,
+      required: [true, "Book Copy ID (Sub-ID) is required"], 
+    },
+    dateOfIssue: {
+      type: Date,
+      required: [true, "Date of issue is required"],
+      default: Date.now,
+    },
+    dueDate: {
+      type: Date,
+      required: [true, "Due date is required"],
+    },
+    returnDate: {
+      type: Date,
+    },
+    status: {
+      type: String,
+      enum: ["Issued", "Returned", "Overdue"],
+      default: "Issued",
+    },
+    fine: {
+      type: Number,
+      default: 0,
     },
   },
-  {
-    timestamps: true,
-  }
+  { timestamps: true }
 );
 
-const Assignment = mongoose.model("Assignment", assignmentSchema);
-
-module.exports = Assignment;
+module.exports = mongoose.model("Assignment", assignmentSchema);
