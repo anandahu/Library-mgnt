@@ -77,6 +77,13 @@ const AssignmentList = ({ assignments, onReturn, onEdit, onDelete }) => {
             (1000 * 60 * 60 * 24),
           );
 
+          // Access populated data safely
+          const studentName = assignment.studentId?.name || "Unknown Student";
+          const department = assignment.studentId?.department || "N/A";
+          const rollNo = assignment.studentId?.rollNo || "N/A";
+          const bookName = assignment.bookId?.bookName || "Unknown Book";
+          const bookDisplayId = assignment.subId || "N/A";
+
           return (
             <div
               key={assignment._id}
@@ -116,8 +123,8 @@ const AssignmentList = ({ assignments, onReturn, onEdit, onDelete }) => {
                   </button>
                   <span
                     className={`px-3 py-1 rounded-full text-xs font-medium flex items-center gap-1.5 ${isReturned
-                        ? "bg-gray-100 text-gray-600"
-                        : "bg-emerald-50 text-emerald-600 border border-emerald-100"
+                      ? "bg-gray-100 text-gray-600"
+                      : "bg-emerald-50 text-emerald-600 border border-emerald-100"
                       }`}
                   >
                     {isReturned ? (
@@ -144,23 +151,23 @@ const AssignmentList = ({ assignments, onReturn, onEdit, onDelete }) => {
               )}
 
               <h3 className="text-lg font-bold text-gray-900 mb-1 line-clamp-1">
-                {assignment.bookId?.bookName}
+                {bookName}
               </h3>
               <p className="text-sm text-gray-500 mb-4">
-                ID: {assignment.subId}
+                Copy ID: {bookDisplayId}
               </p>
 
               <div className="space-y-2 border-t border-gray-100 pt-4 mb-4">
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-500">Student</span>
                   <span className="text-gray-900 font-medium text-right line-clamp-1">
-                    {assignment.studentId?.name}
+                    {studentName}
                   </span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span className="text-gray-500">Dept/Roll</span>
                   <span className="text-gray-900 text-right">
-                    {assignment.studentId?.department} • {assignment.studentId?.rollNo}
+                    {department} • {rollNo}
                   </span>
                 </div>
                 <div className="flex justify-between text-sm">
@@ -193,8 +200,8 @@ const AssignmentList = ({ assignments, onReturn, onEdit, onDelete }) => {
                 <button
                   onClick={() => onReturn(assignment._id)}
                   className={`w-full mt-2 py-2.5 rounded-lg transition-colors text-sm font-medium flex items-center justify-center gap-2 ${fine > 0
-                      ? "bg-red-600 hover:bg-red-700 text-white"
-                      : "bg-emerald-500 hover:bg-emerald-600 text-white"
+                    ? "bg-red-600 hover:bg-red-700 text-white"
+                    : "bg-emerald-500 hover:bg-emerald-600 text-white"
                     }`}
                 >
                   Mark as Returned
